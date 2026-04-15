@@ -24,7 +24,9 @@
   --card-hover-bg: rgba(0, 0, 0, 0.04);
   --border-subtle: rgba(0, 0, 0, 0.06);
   --border-section: rgba(0, 0, 0, 0.06);
-  --navbar-bg: rgba(245, 246, 250, 0.85);
+  --navbar-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.62) 0%, rgba(240, 244, 249, 0.44) 100%);
+  --navbar-border: rgba(255, 255, 255, 0.48);
+  --navbar-shadow: 0 10px 30px rgba(94, 109, 133, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.55);
   --navbar-logo: #1A1A2E;
   --navbar-divider: rgba(0, 0, 0, 0.12);
   --navbar-tagline: rgba(26, 26, 46, 0.4);
@@ -124,6 +126,8 @@
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-section: rgba(255, 255, 255, 0.05);
   --navbar-bg: transparent;
+  --navbar-border: transparent;
+  --navbar-shadow: none;
   --navbar-logo: #F0F0F0;
   --navbar-divider: rgba(255, 255, 255, 0.15);
   --navbar-tagline: rgba(240, 240, 240, 0.4);

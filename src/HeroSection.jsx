@@ -128,10 +128,12 @@ const HeroSection = () => {
           justify-content: space-between;
           padding: 0 48px;
           background: var(--navbar-bg);
+          border-bottom: 1px solid var(--navbar-border);
+          box-shadow: var(--navbar-shadow);
           backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px);
           z-index: 10;
-          transition: background 400ms ease;
+          transition: background 400ms ease, border-color 400ms ease, box-shadow 400ms ease;
         }
 
         .navbar-left {
