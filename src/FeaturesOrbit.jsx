@@ -259,12 +259,10 @@ export default function FeaturesOrbit() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          background:
-            radial-gradient(ellipse at 20% 50%, rgba(6,182,212,0.04) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.04) 0%, transparent 50%),
-            #080808;
+          background: var(--fo-section-bg);
           overflow: visible;
           padding: 100px 20px 80px;
+          transition: background 400ms ease;
         }
 
         /* Gradient transition from hero */
@@ -272,9 +270,10 @@ export default function FeaturesOrbit() {
           position: absolute;
           top: 0; left: 0; right: 0;
           height: 180px;
-          background: linear-gradient(to bottom, #080808 0%, transparent 100%);
+          background: linear-gradient(to bottom, var(--fo-fade-color) 0%, transparent 100%);
           z-index: 2;
           pointer-events: none;
+          transition: background 400ms ease;
         }
 
         /* ━━ Typography ━━ */
@@ -282,7 +281,7 @@ export default function FeaturesOrbit() {
           font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
           font-size: clamp(36px, 5vw, 64px);
           font-weight: 300;
-          color: #F0F0F0;
+          color: var(--fo-heading-color);
           letter-spacing: -0.03em;
           text-align: center;
           margin: 0 0 16px;
@@ -309,7 +308,7 @@ export default function FeaturesOrbit() {
         .fo-sub {
           font-family: 'DM Sans', system-ui, sans-serif;
           font-size: 18px;
-          color: #6b7280;
+          color: var(--fo-sub-color);
           max-width: 480px;
           text-align: center;
           margin: 0 auto 48px;
@@ -336,8 +335,17 @@ export default function FeaturesOrbit() {
           margin: -250px 0 0 -250px;
           will-change: transform;
           z-index: 1;
+          transition: filter 400ms ease;
         }
         .fo-brain canvas { background: transparent !important; }
+
+        /* Light and dark mode: No CSS filters to preserve native WebGL rendering */
+        [data-theme="light"] .fo-brain {
+          opacity: 1;
+        }
+        [data-theme="dark"] .fo-brain {
+          opacity: 1;
+        }
 
         /* ━━ SVG connecting lines overlay ━━ */
         .fo-lines {
@@ -348,7 +356,7 @@ export default function FeaturesOrbit() {
         }
 
         .fo-bg-line {
-          stroke: rgba(255,255,255,0.04);
+          stroke: var(--fo-line-bg);
           stroke-width: 1;
           stroke-dasharray: 4 4;
           fill: none;
@@ -394,14 +402,14 @@ export default function FeaturesOrbit() {
         .fo-circ {
           width: 80px; height: 80px;
           border-radius: 50%;
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.03);
+          border: 1px solid var(--fo-circ-border);
+          background: var(--fo-circ-bg);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #94a3b8;
+          color: var(--fo-circ-color);
           transition:
             transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
             border-color 0.3s ease,
@@ -436,7 +444,7 @@ export default function FeaturesOrbit() {
           font-size: 13px;
           text-transform: uppercase;
           letter-spacing: 0.15em;
-          color: #94a3b8;
+          color: var(--fo-lbl-color);
           margin-top: 12px;
           white-space: nowrap;
           transition: color 0.3s ease;
@@ -447,7 +455,7 @@ export default function FeaturesOrbit() {
         .fo-dsc {
           font-family: 'DM Sans', system-ui, sans-serif;
           font-size: 14px;
-          color: #cbd5e1;
+          color: var(--fo-dsc-color);
           line-height: 1.6;
           max-width: 200px;
           text-align: center;
@@ -468,7 +476,7 @@ export default function FeaturesOrbit() {
           inset: 0;
           z-index: 10;
           pointer-events: none;
-          opacity: 0.028;
+          opacity: var(--fo-noise-opacity);
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
           background-repeat: repeat;
           background-size: 256px;

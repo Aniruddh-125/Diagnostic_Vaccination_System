@@ -1,10 +1,13 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Application } from '@splinetool/runtime';
 import gsap from 'gsap';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from './ThemeContext';
 
 const HeroSection = () => {
   const canvasRef = useRef(null);
   const dnaAppRef = useRef(null);
+  const { theme } = useTheme();
 
   // Force DNA animation to play on load
   const onDnaLoad = useCallback((app) => {
@@ -109,18 +112,6 @@ const HeroSection = () => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap');
 
-        :root {
-          --bg: #080808;
-          --cyan: #00F5FF;
-          --cyan-glow: rgba(0, 245, 255, 0.12);
-          --magenta: #FF2D9B;
-          --text-primary: #F0F0F0;
-          --text-muted: rgba(240, 240, 240, 0.45);
-          --text-faint: rgba(240, 240, 240, 0.18);
-          --glass-bg: rgba(255, 255, 255, 0.04);
-          --glass-border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
         *, *::before, *::after {
           margin: 0;
           padding: 0;
@@ -136,8 +127,11 @@ const HeroSection = () => {
           align-items: center;
           justify-content: space-between;
           padding: 0 48px;
-          background: transparent;
+          background: var(--navbar-bg);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
           z-index: 10;
+          transition: background 400ms ease;
         }
 
         .navbar-left {
@@ -150,7 +144,7 @@ const HeroSection = () => {
           font-family: 'Syne', sans-serif;
           font-weight: 700;
           font-size: 16px;
-          color: #F0F0F0;
+          color: var(--navbar-logo);
           letter-spacing: 0.15em;
           text-decoration: none;
         }
@@ -158,13 +152,13 @@ const HeroSection = () => {
         .navbar-divider {
           width: 1px;
           height: 24px;
-          background: rgba(255, 255, 255, 0.15);
+          background: var(--navbar-divider);
         }
 
         .navbar-tagline {
           font-family: 'DM Sans', sans-serif;
           font-size: 10px;
-          color: rgba(240, 240, 240, 0.4);
+          color: var(--navbar-tagline);
           text-transform: uppercase;
           letter-spacing: 0.2em;
         }
@@ -180,7 +174,7 @@ const HeroSection = () => {
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.15em;
-          color: rgba(240, 240, 240, 0.5);
+          color: var(--navbar-link);
           text-decoration: none;
           cursor: pointer;
           transition: color 150ms ease;
@@ -190,7 +184,7 @@ const HeroSection = () => {
         }
 
         .navbar-link:hover {
-          color: #F0F0F0;
+          color: var(--navbar-link-hover);
         }
 
         .navbar-right {
@@ -203,20 +197,20 @@ const HeroSection = () => {
           font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: #F0F0F0;
+          color: var(--navbar-login-color);
           background: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--navbar-login-border);
           padding: 0 20px;
           height: 34px;
           border-radius: 3px;
           cursor: pointer;
-          transition: border-color 150ms ease;
+          transition: border-color 150ms ease, color 150ms ease;
           display: inline-flex;
           align-items: center;
         }
 
         .navbar-login:hover {
-          border-color: #F0F0F0;
+          border-color: var(--navbar-login-hover-border);
         }
 
         /* ======================== HERO ======================== */
@@ -225,8 +219,9 @@ const HeroSection = () => {
           width: 100vw;
           height: 100vh;
           min-height: 700px;
-          background: #080808;
+          background: var(--hero-bg);
           overflow: hidden;
+          transition: background 400ms ease;
         }
 
         /* LAYER 0 — Spline (full-bleed, immersive background) */
@@ -238,6 +233,7 @@ const HeroSection = () => {
           height: 140%;
           z-index: 0;
           pointer-events: none;
+          transition: opacity 400ms ease, filter 400ms ease;
         }
 
         .spline-container canvas {
@@ -248,6 +244,33 @@ const HeroSection = () => {
           transform-origin: top center;
         }
 
+        /* Light and dark mode: No CSS filters on the canvas to preserve WebGL resolution/anti-aliasing */
+        [data-theme="light"] .spline-container {
+          opacity: 1;
+        }
+        [data-theme="dark"] .spline-container {
+          opacity: 1;
+        }
+
+        /* Light mode: tighten veil to left half only — lets the dark DNA stage breathe */
+        [data-theme="light"] .gradient-veil {
+          width: 52%;
+          background: linear-gradient(
+            to right,
+            #E8ECF1 0%,
+            #E8ECF1 28%,
+            rgba(232,236,241,0.72) 50%,
+            rgba(232,236,241,0.15) 78%,
+            transparent 100%
+          );
+        }
+
+        /* Light mode: mask top-veil to left side so it doesn’t wash the DNA at the top */
+        [data-theme="light"] .top-veil {
+          -webkit-mask-image: linear-gradient(to right, black 0%, black 28%, transparent 54%);
+          mask-image: linear-gradient(to right, black 0%, black 28%, transparent 54%);
+        }
+
         /* LAYER 1 — Gradient veils */
         .gradient-veil {
           position: absolute;
@@ -256,15 +279,16 @@ const HeroSection = () => {
           height: 100%;
           background: linear-gradient(
             to right,
-            #080808 0%,
-            #080808 20%,
-            rgba(8, 8, 8, 0.95) 35%,
-            rgba(8, 8, 8, 0.75) 50%,
-            rgba(8, 8, 8, 0.3) 65%,
+            var(--hero-gradient-start) 0%,
+            var(--hero-gradient-start) 20%,
+            var(--hero-gradient-95) 35%,
+            var(--hero-gradient-75) 50%,
+            var(--hero-gradient-30) 65%,
             transparent 100%
           );
           z-index: 1;
           pointer-events: none;
+          transition: background 400ms ease;
         }
 
         .top-veil {
@@ -273,11 +297,12 @@ const HeroSection = () => {
           height: 180px;
           background: linear-gradient(
             to bottom,
-            rgba(8, 8, 8, 0.85) 0%,
+            var(--hero-top-veil) 0%,
             transparent 100%
           );
           z-index: 1;
           pointer-events: none;
+          transition: background 400ms ease;
         }
 
         /* LAYER 2 — Text content (lower-left) */
@@ -295,7 +320,7 @@ const HeroSection = () => {
           font-weight: 600;
           letter-spacing: 0.25em;
           text-transform: uppercase;
-          color: rgba(240, 240, 240, 0.5);
+          color: var(--text-muted);
           margin-bottom: 14px;
         }
 
@@ -305,7 +330,7 @@ const HeroSection = () => {
           font-size: clamp(32px, 3.8vw, 58px);
           line-height: 1.1;
           letter-spacing: -0.02em;
-          color: #F0F0F0;
+          color: var(--text-primary);
           margin: 0;
         }
 
@@ -314,7 +339,7 @@ const HeroSection = () => {
         }
 
         .headline-gradient {
-          background: linear-gradient(90deg, #F0F0F0 30%, #00F5FF 100%);
+          background: linear-gradient(90deg, var(--headline-gradient-start) 30%, var(--headline-gradient-end) 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
@@ -323,7 +348,7 @@ const HeroSection = () => {
         .subheading {
           font-family: 'DM Sans', sans-serif;
           font-size: 14.5px;
-          color: rgba(240, 240, 240, 0.45);
+          color: var(--text-muted);
           line-height: 1.65;
           max-width: 360px;
           margin-top: 16px;
@@ -336,8 +361,8 @@ const HeroSection = () => {
           align-items: center;
           gap: 10px;
           background: transparent;
-          border: 1px solid rgba(255, 255, 255, 0.35);
-          color: #F0F0F0;
+          border: 1px solid var(--cta-btn-border);
+          color: var(--cta-btn-color);
           font-family: 'DM Sans', sans-serif;
           font-weight: 500;
           font-size: 12px;
@@ -347,12 +372,12 @@ const HeroSection = () => {
           height: 44px;
           border-radius: 100px;
           cursor: pointer;
-          transition: border-color 200ms ease, background 200ms ease;
+          transition: border-color 200ms ease, background 200ms ease, color 200ms ease;
         }
 
         .cta-btn:hover {
-          border-color: rgba(255, 255, 255, 0.7);
-          background: rgba(255, 255, 255, 0.05);
+          border-color: var(--cta-btn-hover-border);
+          background: var(--cta-btn-hover-bg);
         }
 
         /* LAYER 3 — Floating elements */
@@ -364,8 +389,8 @@ const HeroSection = () => {
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          background: #F0F0F0;
-          color: #080808;
+          background: var(--scroll-pill-bg);
+          color: var(--scroll-pill-color);
           font-family: 'DM Sans', sans-serif;
           font-size: 12px;
           font-weight: 500;
@@ -375,11 +400,11 @@ const HeroSection = () => {
           cursor: pointer;
           z-index: 3;
           border: none;
-          transition: background 150ms ease;
+          transition: background 150ms ease, color 150ms ease;
         }
 
         .scroll-pill:hover {
-          background: #ffffff;
+          background: var(--scroll-pill-hover);
         }
 
         .scroll-pill svg {
@@ -403,7 +428,7 @@ const HeroSection = () => {
         .side-nav-item {
           font-family: 'DM Sans', sans-serif;
           font-size: 10px;
-          color: rgba(240, 240, 240, 0.35);
+          color: var(--side-nav-color);
           letter-spacing: 0.1em;
           cursor: pointer;
           transition: color 150ms ease;
@@ -415,13 +440,13 @@ const HeroSection = () => {
         }
 
         .side-nav-item.active {
-          color: #F0F0F0;
-          border-left: 1px solid #F0F0F0;
+          color: var(--side-nav-active);
+          border-left: 1px solid var(--side-nav-active);
           padding-left: 8px;
         }
 
         .side-nav-item:hover {
-          color: rgba(240, 240, 240, 0.7);
+          color: var(--navbar-link-hover);
         }
 
         /* NOISE OVERLAY */
@@ -432,7 +457,7 @@ const HeroSection = () => {
           height: 100%;
           z-index: 9;
           pointer-events: none;
-          opacity: 0.028;
+          opacity: var(--noise-opacity);
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
           background-repeat: repeat;
           background-size: 256px 256px;
@@ -492,6 +517,7 @@ const HeroSection = () => {
           <button className="navbar-link">About</button>
         </div>
         <div className="navbar-right">
+          <ThemeToggle />
           <button className="navbar-login">Login</button>
         </div>
       </nav>
